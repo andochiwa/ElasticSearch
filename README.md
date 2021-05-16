@@ -67,7 +67,7 @@ ES 里的 Index 可以看做一个库，而 Types 相当于表，Documents 则�
 
 > 索引操作
 
-1. 创建索引
+### 1. 创建索引
 
 对比关系型数据库，创建索引就等同于创建数据库
 
@@ -83,7 +83,7 @@ ES 里的 Index 可以看做一个库，而 Types 相当于表，Documents 则�
 }
 ```
 
-2. 获取索引
+### 2. 获取索引
 
 > 获取某个索引
 
@@ -137,13 +137,13 @@ ES 里的 Index 可以看做一个库，而 Types 相当于表，Documents 则�
 |   store.size   |                 主分片和副分片整体占空间大小                 |
 | pri.store.size |                       主分片占空间大小                       |
 
-3. 删除索引
+### 3. 删除索引
 
 发送delete请求，并且带上索引字段名即可
 
 ## 文档操作
 
-1. 创建文档
+### 1. 创建文档
 
 索引已经创建好了，接下来我们来创建文档，并添加数据。这里的文档可以类比为关系型数据库中的表数据，添加的数据格式为 JSON 格式
 
@@ -155,7 +155,6 @@ ES 里的 Index 可以看做一个库，而 Types 相当于表，Documents 则�
 {
     "title":"小米手机",
     "category":"小米",
-    "images":"http://www.gulixueyuan.com/xm.jpg",
     "price":3999.00
 }
 ```
@@ -187,7 +186,7 @@ ES 里的 Index 可以看做一个库，而 Types 相当于表，Documents 则�
 
 **此处需要注意：如果增加数据时明确数据主键，那么请求方式也可以为 PUT**
 
-2. 查看文档
+### 2. 查看文档
 
 查看文档时，需要指明文档的唯一性标识，类似于 MySQL 中数据的主键查询
 
@@ -205,13 +204,12 @@ ES 里的 Index 可以看做一个库，而 Types 相当于表，Documents 则�
         "_source"【文档源信息】: {
         "title": "华为手机",
         "category": "华为",
-        "images": "http://www.gulixueyuan.com/hw.jpg",
         "price": 4999.00
     }
 }
 ```
 
-3. 修改文档
+### 3. 修改文档
 
 和新增文档一样，输入相同的 URL 地址请求，如果请求体变化，会将原有的数据内容覆盖在 Postman 中，向 ES 服务器发 POST 请求 ：http://127.0.0.1:9200/shopping/_doc/1
 
@@ -232,7 +230,7 @@ ES 里的 Index 可以看做一个库，而 Types 相当于表，Documents 则�
 }
 ```
 
-4. 修改字段
+### 4. 修改字段
 
 修改数据时，也可以只修改某一给条数据的局部信息
 
@@ -246,7 +244,7 @@ ES 里的 Index 可以看做一个库，而 Types 相当于表，Documents 则�
 }
 ```
 
-5. 删除文档
+### 5. 删除文档
 
 删除一个文档不会立即从磁盘上移除，它只是被标记成已删除（逻辑删除）。
 
@@ -268,4 +266,30 @@ ES 里的 Index 可以看做一个库，而 Types 相当于表，Documents 则�
     "_primary_term": 2
 }
 ```
+
+### 6. 条件查询，分页查询
+
+向ES服务器发送请求: http://127.0.0.1:9200/shopping/_search
+
+```json
+{
+    # 条件查询开始
+    "query": {
+        "match": {
+            "category": "小米"
+        }
+    },
+    # 分页开始
+    "from": 0, # 第几条
+    "size": 1, # 要几条
+	"source": ["title"], # 指定想要哪些数据
+	"sort": {
+        "price": {
+            "order": "desc" # 排序，升序
+        }
+    }
+}
+```
+
+即可查询到`category`为`小米`的数据
 
