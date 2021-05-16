@@ -232,3 +232,17 @@ ES 里的 Index 可以看做一个库，而 Types 相当于表，Documents 则�
 }
 ```
 
+4. 修改字段
+
+修改数据时，也可以只修改某一给条数据的局部信息
+
+在 Postman 中，向 ES 服务器发 POST 请求 ：http://127.0.0.1:9200/shopping/_update/1
+
+```json
+{
+    "doc": {
+    	"price":3000.00
+    }
+}
+```
+
