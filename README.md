@@ -187,7 +187,7 @@ ES 里的 Index 可以看做一个库，而 Types 相当于表，Documents 则�
 
 **此处需要注意：如果增加数据时明确数据主键，那么请求方式也可以为 PUT**
 
-## 查看文档
+2. 查看文档
 
 查看文档时，需要指明文档的唯一性标识，类似于 MySQL 中数据的主键查询
 
@@ -208,6 +208,27 @@ ES 里的 Index 可以看做一个库，而 Types 相当于表，Documents 则�
         "images": "http://www.gulixueyuan.com/hw.jpg",
         "price": 4999.00
     }
+}
+```
+
+3. 修改文档
+
+和新增文档一样，输入相同的 URL 地址请求，如果请求体变化，会将原有的数据内容覆盖在 Postman 中，向 ES 服务器发 POST 请求 ：http://127.0.0.1:9200/shopping/_doc/1
+
+```json
+{
+    "_index": "shopping",
+    "_type": "_doc",
+    "_id": "1",
+    "_version"【版本】: 2,
+    "result"【结果】: "updated", # updated 表示数据被更新
+    "_shards": {
+        "total": 2,
+        "successful": 1,
+        "failed": 0
+    },
+    "_seq_no": 2,
+    "_primary_term": 2
 }
 ```
 
