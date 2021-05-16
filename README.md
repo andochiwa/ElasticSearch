@@ -53,3 +53,142 @@ Lucene 是 Apache 软件基金会 Jakarta 项目组的一个子项目，提供�
 * Elasticsearch 在开源日志管理用例中占据主导地位，许多组织在 Elasticsearch 中索引它们的日志以使其可搜索
 * 如果你喜欢监控和指标，那么请使用 Elasticsearch，因为相对于 Solr，Elasticsearch 暴露了更多的关键指标
 
+# ElasticSearch入门
+
+## 数据格式
+
+Elasticsearch 是面向文档型数据库，一条数据在这里就是一个文档。为了方便大家理解，我们将 Elasticsearch 里存储文档数据和关系型数据库 MySQL 存储数据的概念进行一个类比
+
+<img src="./image/2.png" style="zoom:150%;" />
+
+ES 里的 Index 可以看做一个库，而 Types 相当于表，Documents 则相当于表的行。这里 Types 的概念已经被逐渐弱化，Elasticsearch 6.X 中，一个 index 下已经只能包含一个type，Elasticsearch 7.X 中, Type 的概念已经被删除了。
+
+## HTTP操作
+
+> 索引操作
+
+1. 创建索引
+
+对比关系型数据库，创建索引就等同于创建数据库
+
+在 Postman 中，向 ES 服务器发 PUT 请求 ：http://127.0.0.1:9200/shopping
+
+请求后，服务器返回响应
+
+```json
+{
+    "acknowledged"【响应结果】: true, # true 操作成功
+    "shards_acknowledged"【分片结果】: true, # 分片操作成功
+    "index"【索引名称】: "shopping"
+}
+```
+
+2. 获取索引
+
+> 获取某个索引
+
+只需要把put改成get请求即可
+
+响应结果：
+
+```json
+{
+    "shopping"【索引名】: {
+        "aliases"【别名】: {},
+        "mappings"【映射】: {},
+        "settings"【设置】: {
+            "index"【设置 - 索引】: {
+                "creation_date"【设置 - 索引 - 创建时间】: "1614265373911",
+                "number_of_shards"【设置 - 索引 - 主分片数量】: "1",
+                "number_of_replicas"【设置 - 索引 - 副分片数量】: "1",
+                "uuid"【设置 - 索引 - 唯一标识】: "eI5wemRERTumxGCc1bAk2A",
+                "version"【设置 - 索引 - 版本】: {
+                	"created": "7080099"
+                },
+                "provided_name"【设置 - 索引 - 名称】: "shopping"
+            }
+        }
+    }
+}
+```
+
+
+
+> 获取所有索引
+
+向 ES 服务器发 GET 请求 ：http://127.0.0.1:9200/_cat/indices?v
+
+这里请求路径中的_cat 表示查看的意思，indices 表示索引，所以整体含义就是查看当前 ES服务器中的所有索引，就好像 MySQL 中的 show tables 的感觉，响应请求如下：
+
+<img src="./image/3.png" style="zoom:150%;" />
+
+
+
+|      表头      |                             含义                             |
+| :------------: | :----------------------------------------------------------: |
+|     health     | 当前服务器健康状态：<br/>green(集群完整) yellow(单点正常、集群不完整) red(单点不正常) |
+|     status     |                      索引打开、关闭状态                      |
+|     index      |                            索引名                            |
+|      uuid      |                         索引统一编号                         |
+|      pri       |                          主分片数量                          |
+|      rep       |                           副本数量                           |
+|   docs.count   |                         可用文档数量                         |
+|  docs.deleted  |                   文档删除状态（逻辑删除）                   |
+|   store.size   |                 主分片和副分片整体占空间大小                 |
+| pri.store.size |                       主分片占空间大小                       |
+
+3. 删除索引
+
+发送delete请求，并且带上索引字段名即可
+
+## 文档操作
+
+1. 创建文档
+
+索引已经创建好了，接下来我们来创建文档，并添加数据。这里的文档可以类比为关系型数据库中的表数据，添加的数据格式为 JSON 格式
+
+在 Postman 中，向 ES 服务器发 POST 请求 ：http://127.0.0.1:9200/shopping/_doc
+
+请求体内容为：
+
+```json
+{
+    "title":"小米手机",
+    "category":"小米",
+    "images":"http://www.gulixueyuan.com/xm.jpg",
+    "price":3999.00
+}
+```
+
+**注意：请求体必须有，而且是json格式，并且请求必须为POST，这代表着文档内容**
+
+服务器响应结果如下：
+
+```json
+{
+    "_index"【索引】: "shopping",
+    "_type"【 类型-文档 】: "_doc",
+    "_id"【唯一标识】: "Xhsa2ncBlvF_7lxyCE9G", #可以类比为 MySQL 中的主键，随机生成
+    "_version"【版本】: 1,
+    "result"【结果】: "created", #这里的 create 表示创建成功
+    "_shards"【分片】: {
+        "total"【分片 - 总数】: 2,
+        "successful"【分片 - 成功】: 1,
+        "failed"【分片 - 失败】: 0
+    },
+    "_seq_no": 0,
+    "_primary_term": 1
+}
+```
+
+上面的数据创建后，由于没有指定数据唯一性标识（ID），默认情况下，ES 服务器会随机生成一个。
+
+如果想要自定义唯一性标识，需要在创建时指定：http://127.0.0.1:9200/shopping/_doc/1
+
+**此处需要注意：如果增加数据时明确数据主键，那么请求方式也可以为 PUT**
+
+## 查看文档
+
+查看文档时，需要指明文档的唯一性标识，类似于 MySQL 中数据的主键查询
+
+在 Postman 中，向 ES 服务器发 GET 请求 ：http://127.0.0.1:9200/shopping/_doc/1
