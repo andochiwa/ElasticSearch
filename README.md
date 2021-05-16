@@ -246,3 +246,26 @@ ES 里的 Index 可以看做一个库，而 Types 相当于表，Documents 则�
 }
 ```
 
+5. 删除文档
+
+删除一个文档不会立即从磁盘上移除，它只是被标记成已删除（逻辑删除）。
+
+在 Postman 中，向 ES 服务器发 DELETE 请求 ：http://127.0.0.1:9200/shopping/_doc/1
+
+```json
+{
+    "_index": "shopping",
+    "_type": "_doc",
+    "_id": "1",
+    "_version"【版本】: 4, #对数据的操作，都会更新版本
+    "result"【结果】: "deleted", # deleted 表示数据被标记为删除
+    "_shards": {
+        "total": 2,
+        "successful": 1,
+        "failed": 0
+    },
+    "_seq_no": 4,
+    "_primary_term": 2
+}
+```
+
