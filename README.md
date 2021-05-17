@@ -293,3 +293,58 @@ ES 里的 Index 可以看做一个库，而 Types 相当于表，Documents 则�
 
 即可查询到`category`为`小米`的数据
 
+## 映射操作
+
+有了索引库，等于有了数据库中的 database。
+
+接下来就需要建索引库(index)中的映射了，类似于数据库(database)中的表结构(table)。创建数据库表需要设置字段名称，类型，长度，约束等；索引库也一样，需要知道这个类型下有哪些字段，每个字段有哪些约束信息，这就叫做映射(mapping)。
+
+### 1. 创建映射
+
+向 ES 服务器发 PUT 请求 ：http://127.0.0.1:9200/user/_mapping，请求的内容为：
+
+```json
+{
+    "properties": {
+        "name":{
+            "type": "text",
+            "index": true
+        },
+        "sex":{
+            "type": "keyword",
+            "index": false
+        },
+        "age":{
+            "type": "keyword",
+            "index": false
+        }
+    }
+}
+```
+
+映射数据说明
+
+* 字段名：任意填写，下面指定许多属性，例如：title、subtitle、images、price
+
+* type：类型，Elasticsearch 中支持的数据类型非常丰富，说几个关键的：
+
+  * String 类型，又分两种：
+    * text：可分词
+    * keyword：不可分词，数据会作为完整字段进行匹配
+  * Numerical：数值类型，分两类
+    * 基本数据类型：long、integer、short、byte、double、float、half_float
+    * 浮点数的高精度类型：scaled_float
+  * Date：日期类型
+  * Array：数组类型
+  * Object：对象
+
+* index：是否索引，默认为 true，也就是说你不进行任何配置，所有字段都会被索引。
+
+  * true：字段会被索引，则可以用来进行搜索
+  * false：字段不会被索引，不能用来搜索
+
+* store：是否将数据进行独立存储，默认为 false
+
+  原始的文本会存储在source 里面，默认情况下其他提取出来的字段都不是独立存储的，是从source 里面提取出来的。当然你也可以独立的存储某个字段，只要设置`"store": true` 即可，获取独立存储的字段要比从_source 中解析快得多，但是也会占用更多的空间，所以要根据实际业务需求来设置。
+
+* analyzer：分词器，这里的 ik_max_word 即使用 ik 分词器,后面会有专门的章节学习
