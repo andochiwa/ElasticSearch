@@ -139,7 +139,7 @@ public class EsClientAdvanceDoc {
         hits.forEach(item -> System.out.println(item.getSourceAsString()));
     }
 
-    // 组合查询
+    // 组合查询: must(), mustNot(), should()
     @Test
     void mustQuery() throws IOException {
         SearchRequest request = new SearchRequest("person");
@@ -149,6 +149,29 @@ public class EsClientAdvanceDoc {
                 .query(QueryBuilders.boolQuery()
                         .must(QueryBuilders.matchQuery("age", "17"))
                         .must(QueryBuilders.matchQuery("name", "lisi")));
+
+
+        request.source(query);
+
+        SearchResponse response
+                = esClient.search(request, RequestOptions.DEFAULT);
+
+        System.out.println(response);
+        SearchHits hits = response.getHits();
+        hits.forEach(item -> System.out.println(item.getSourceAsString()));
+    }
+
+    // 范围查询
+    @Test
+    void rangeQuery() throws IOException {
+        SearchRequest request = new SearchRequest("person");
+
+        // 范围查询
+        SearchSourceBuilder query = new SearchSourceBuilder()
+                .query(QueryBuilders.rangeQuery("age")
+                        .gte(15)
+                        .lte(17))
+                .sort("age");
 
 
         request.source(query);
