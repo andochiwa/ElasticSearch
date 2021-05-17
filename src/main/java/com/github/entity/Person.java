@@ -5,15 +5,15 @@ package com.github.entity;
  * @version 1.0
  * @create 05-17-21:15
  */
-public class User {
+public class Person {
     private String name;
 
     private Integer age;
 
-    public User() {
+    public Person() {
     }
 
-    public User(String name, Integer age) {
+    public Person(String name, Integer age) {
         this.name = name;
         this.age = age;
     }
@@ -24,5 +24,13 @@ public class User {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Integer getAge() {
+        return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
     }
 }
