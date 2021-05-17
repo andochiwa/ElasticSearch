@@ -14,6 +14,7 @@ import org.elasticsearch.common.unit.Fuzziness;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.junit.jupiter.api.AfterAll;
@@ -37,8 +38,20 @@ public class EsClientAdvanceDoc {
             )
     );
 
+    // 高级查询使用的request
+    SearchRequest request = new SearchRequest("person");
+
     @AfterAll
     void closeClient() throws IOException {
+        // 发送查询请求
+        SearchResponse response
+                = esClient.search(request, RequestOptions.DEFAULT);
+
+        // 遍历结果数据
+        System.out.println(response);
+        SearchHits hits = response.getHits();
+        hits.forEach(item -> System.out.println(item.getSourceAsString()));
+
         // 关闭客户端
         esClient.close();
     }
@@ -46,9 +59,9 @@ public class EsClientAdvanceDoc {
     // 批量插入
     @Test
     void batchQuery() throws IOException {
-        // 批量插入数据
+        // 批量操作所用的request
         BulkRequest request = new BulkRequest();
-
+        // 批量插入数据
         request.add(new IndexRequest().id("1").index("person")
                 .source(XContentType.JSON, "name", "zhangsan", "age", "15"));
         request.add(new IndexRequest().id("2").index("person")
@@ -70,6 +83,7 @@ public class EsClientAdvanceDoc {
     // 批量删除
     @Test
     void batchDelete() throws IOException {
+        // 批量操作所用的request
         BulkRequest request = new BulkRequest();
 
         request.add(new DeleteRequest("person", "1"));
@@ -83,47 +97,27 @@ public class EsClientAdvanceDoc {
 
     // 查询索引中所有数据: matchAllQuery
     @Test
-    void queryAll() throws IOException {
+    void queryAll() {
         // 全量查询
-        SearchRequest request = new SearchRequest("person");
-
         SearchSourceBuilder query =
                 new SearchSourceBuilder().query(QueryBuilders.matchAllQuery());
 
         request.source(query);
-
-        SearchResponse response
-                = esClient.search(request, RequestOptions.DEFAULT);
-
-        System.out.println(response);
-        SearchHits hits = response.getHits();
-        hits.forEach(item -> System.out.println(item.getSourceAsString()));
     }
 
     // 条件查询: termQuery
     @Test
-    void conditionQuery() throws IOException {
-        SearchRequest request = new SearchRequest("person");
-
+    void conditionQuery() {
         SearchSourceBuilder query =
                 new SearchSourceBuilder().query(QueryBuilders.termQuery("age", "17"));
 
         request.source(query);
 
-        SearchResponse response
-                = esClient.search(request, RequestOptions.DEFAULT);
-
-        System.out.println(response);
-        SearchHits hits = response.getHits();
-        hits.forEach(item -> System.out.println(item.getSourceAsString()));
-
     }
 
     // 分页, 排序, 过滤字段: from()、size() sort() fetchSource
     @Test
-    void paginationSortFetchQuery() throws IOException {
-        SearchRequest request = new SearchRequest("person");
-
+    void paginationSortFetchQuery() {
         SearchSourceBuilder query = new SearchSourceBuilder()
                 .query(QueryBuilders.matchAllQuery())
                 .from(0).size(3)
@@ -131,42 +125,23 @@ public class EsClientAdvanceDoc {
                 .fetchSource("age", "name");
 
         request.source(query);
-
-        SearchResponse response
-                = esClient.search(request, RequestOptions.DEFAULT);
-
-        System.out.println(response);
-        SearchHits hits = response.getHits();
-        hits.forEach(item -> System.out.println(item.getSourceAsString()));
     }
 
     // 组合查询: must(), mustNot(), should()
     @Test
-    void mustQuery() throws IOException {
-        SearchRequest request = new SearchRequest("person");
-
+    void mustQuery() {
         // 组合查询
         SearchSourceBuilder query = new SearchSourceBuilder()
                 .query(QueryBuilders.boolQuery()
                         .must(QueryBuilders.matchQuery("age", "17"))
                         .must(QueryBuilders.matchQuery("name", "lisi")));
 
-
         request.source(query);
-
-        SearchResponse response
-                = esClient.search(request, RequestOptions.DEFAULT);
-
-        System.out.println(response);
-        SearchHits hits = response.getHits();
-        hits.forEach(item -> System.out.println(item.getSourceAsString()));
     }
 
     // 范围查询
     @Test
-    void rangeQuery() throws IOException {
-        SearchRequest request = new SearchRequest("person");
-
+    void rangeQuery() {
         // 范围查询
         SearchSourceBuilder query = new SearchSourceBuilder()
                 .query(QueryBuilders.rangeQuery("age")
@@ -174,35 +149,28 @@ public class EsClientAdvanceDoc {
                         .lte(17))
                 .sort("age");
 
-
         request.source(query);
-
-        SearchResponse response
-                = esClient.search(request, RequestOptions.DEFAULT);
-
-        System.out.println(response);
-        SearchHits hits = response.getHits();
-        hits.forEach(item -> System.out.println(item.getSourceAsString()));
     }
 
     // 模糊查询
     @Test
-    void fuzzyQuery() throws IOException {
-        SearchRequest request = new SearchRequest("person");
-
+    void fuzzyQuery() {
         // 模糊查询
         SearchSourceBuilder query = new SearchSourceBuilder()
                 .query(QueryBuilders.fuzzyQuery("name", "lis").fuzziness(Fuzziness.AUTO))
                 .sort("age");
 
+        request.source(query);
+    }
+
+    // 聚合查询, 分组查询: max&min&...  term()
+    @Test
+    void aggregationQuery() {
+        // 聚合查询
+        SearchSourceBuilder query = new SearchSourceBuilder()
+                .aggregation(AggregationBuilders.max("maxAge").field("age"));
+
 
         request.source(query);
-
-        SearchResponse response
-                = esClient.search(request, RequestOptions.DEFAULT);
-
-        System.out.println(response);
-        SearchHits hits = response.getHits();
-        hits.forEach(item -> System.out.println(item.getSourceAsString()));
     }
 }
