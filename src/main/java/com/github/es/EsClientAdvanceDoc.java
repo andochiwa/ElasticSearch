@@ -10,6 +10,7 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.unit.Fuzziness;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHits;
@@ -171,6 +172,27 @@ public class EsClientAdvanceDoc {
                 .query(QueryBuilders.rangeQuery("age")
                         .gte(15)
                         .lte(17))
+                .sort("age");
+
+
+        request.source(query);
+
+        SearchResponse response
+                = esClient.search(request, RequestOptions.DEFAULT);
+
+        System.out.println(response);
+        SearchHits hits = response.getHits();
+        hits.forEach(item -> System.out.println(item.getSourceAsString()));
+    }
+
+    // 模糊查询
+    @Test
+    void fuzzyQuery() throws IOException {
+        SearchRequest request = new SearchRequest("person");
+
+        // 模糊查询
+        SearchSourceBuilder query = new SearchSourceBuilder()
+                .query(QueryBuilders.fuzzyQuery("name", "lis").fuzziness(Fuzziness.AUTO))
                 .sort("age");
 
 
