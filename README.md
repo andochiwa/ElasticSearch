@@ -727,7 +727,7 @@ http.cors.allow-origin: "*"
 
 节点3
 
-```json
+```yaml
 #节点 3 的配置信息：
 #集群名称，节点之间要保持一致
 cluster.name: my-elasticsearch
@@ -792,7 +792,7 @@ chown -R es:es es-cluster #后面的文件夹名，改变文件夹所有者
 
 修改config/elasticsearch.yml 文件，分发文件
 
-```json
+```bash
 #集群名称
 cluster.name: cluster-es
 #节点名称，每个节点的名称不能重复
@@ -828,7 +828,7 @@ cluster.routing.allocation.node_initial_primaries_recoveries: 16
 
 修改/etc/security/limits.conf ，分发文件
 
-```json
+```bash
 # 在文件末尾中增加下面内容
 es soft nofile 65536
 es hard nofile 65536
@@ -836,7 +836,7 @@ es hard nofile 65536
 
 修改/etc/security/limits.d/20-nproc.conf，分发文件
 
-```json
+```bash
 # 在文件末尾中增加下面内容
 es soft nofile 65536
 es hard nofile 65536
@@ -846,14 +846,14 @@ es hard nofile 65536
 
 修改/etc/sysctl.conf
 
-```json
+```bash
 # 在文件中增加下面内容
 vm.max_map_count=655360
 ```
 
 重新加载
 
-```json
+```bash
 sysctl -p
 ```
 
