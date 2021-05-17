@@ -48,12 +48,18 @@ public class EsClientAdvanceDoc {
         // 批量插入数据
         BulkRequest request = new BulkRequest();
 
-        request.add(new IndexRequest().id("1").index("person").source(XContentType.JSON, "name", "zhangsan", "age", "15"));
-        request.add(new IndexRequest().id("2").index("person").source(XContentType.JSON, "name", "lisi", "age", "16"));
-        request.add(new IndexRequest().id("3").index("person").source(XContentType.JSON, "name", "wangwu", "age", "17"));
-        request.add(new IndexRequest().id("4").index("person").source(XContentType.JSON, "name", "lisi", "age", "17"));
-        request.add(new IndexRequest().id("5").index("person").source(XContentType.JSON, "name", "wangwu", "age", "16"));
-        request.add(new IndexRequest().id("6").index("person").source(XContentType.JSON, "name", "zhangsan", "age", "18"));
+        request.add(new IndexRequest().id("1").index("person")
+                .source(XContentType.JSON, "name", "zhangsan", "age", "15"));
+        request.add(new IndexRequest().id("2").index("person")
+                .source(XContentType.JSON, "name", "lisi", "age", "16"));
+        request.add(new IndexRequest().id("3").index("person")
+                .source(XContentType.JSON, "name", "wangwu", "age", "17"));
+        request.add(new IndexRequest().id("4").index("person")
+                .source(XContentType.JSON, "name", "lisi", "age", "17"));
+        request.add(new IndexRequest().id("5").index("person")
+                .source(XContentType.JSON, "name", "wangwu", "age", "16"));
+        request.add(new IndexRequest().id("6").index("person")
+                .source(XContentType.JSON, "name", "zhangsan", "age", "18"));
 
         BulkResponse response = esClient.bulk(request, RequestOptions.DEFAULT);
 
@@ -113,9 +119,8 @@ public class EsClientAdvanceDoc {
     }
 
     // 分页, 排序, 过滤字段: from()、size() sort() fetchSource
-    //
     @Test
-    void paginationQuery() throws IOException {
+    void paginationSortFetchQuery() throws IOException {
         SearchRequest request = new SearchRequest("person");
 
         SearchSourceBuilder query = new SearchSourceBuilder()
@@ -132,6 +137,27 @@ public class EsClientAdvanceDoc {
         System.out.println(response);
         SearchHits hits = response.getHits();
         hits.forEach(item -> System.out.println(item.getSourceAsString()));
+    }
 
+    // 组合查询
+    @Test
+    void mustQuery() throws IOException {
+        SearchRequest request = new SearchRequest("person");
+
+        // 组合查询
+        SearchSourceBuilder query = new SearchSourceBuilder()
+                .query(QueryBuilders.boolQuery()
+                        .must(QueryBuilders.matchQuery("age", "17"))
+                        .must(QueryBuilders.matchQuery("name", "lisi")));
+
+
+        request.source(query);
+
+        SearchResponse response
+                = esClient.search(request, RequestOptions.DEFAULT);
+
+        System.out.println(response);
+        SearchHits hits = response.getHits();
+        hits.forEach(item -> System.out.println(item.getSourceAsString()));
     }
 }
