@@ -12,7 +12,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
  * @create 05-18-20:58
  */
 @Data
-@Document(indexName = "shopping", shards = 3, replicas = 1) // 文档关联
+@Document(indexName = "shopping", shards = 3, replicas = 2) // 文档关联
 public class Product {
     @Id
     private Long id;

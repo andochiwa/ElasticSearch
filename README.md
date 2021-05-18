@@ -1416,7 +1416,7 @@ Elasticsearch 是分布式的。当文档创建、更新或删除时， 新版�
 
 外部版本号不仅在索引和删除请求是可以指定，而且在 创建 新文档时也可以指定
 
-## Kibana
+### 4. Kibana
 
 Kibana 是一个免费且开放的用户界面，能够让你对 Elasticsearch 数据进行可视化，并让你在 Elastic Stack 中进行导航。你可以进行各种操作，从跟踪查询负载，到理解请求如何流经你的整个应用，都能轻松完成。
 
@@ -1437,3 +1437,25 @@ i18n.locale: "zh-CN"
 ```
 
 3. Windows 环境下执行 bin/kibana.bat 文件
+
+# ElasticSearch 集成框架
+
+## Spring Data 框架加成
+
+### 1. Spring Data
+
+Spring Data 是一个用于简化数据库、非关系型数据库、索引库访问，并支持云服务的开源框架。其主要目标是使得对数据的访问变得方便快捷，并支持 map-reduce 框架和云计算数据服务。
+
+ Spring Data 可以极大的简化 JPA（Elasticsearch„）的写法，可以在几乎不用写实现的情况下，实现对数据的访问和操作。除了 CRUD 外，还包括如分页、排序等一些常用的功能。
+
+Spring Data 的官网：https://spring.io/projects/spring-data
+
+### 2. Spring Data Elasticsearch 介绍
+
+Spring Data Elasticsearch 基于 spring data API 简化 Elasticsearch 操作，将原始操作Elasticsearch 的客户端 API 进行封装 。Spring Data 为 Elasticsearch 项目提供集成搜索引擎。Spring Data Elasticsearch POJO 的关键功能区域为中心的模型与 Elastichsearch 交互文档和轻松地编写一个存储索引库数据访问层。
+
+官方网站: https://spring.io/projects/spring-data-elasticsearch
+
+具体使用直接看代码即可
+
+### 3. 
