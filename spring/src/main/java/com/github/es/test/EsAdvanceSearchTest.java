@@ -1,6 +1,5 @@
 package com.github.es.test;
 
-import com.github.es.dao.ProductDao;
 import com.github.es.entity.Product;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermQueryBuilder;
@@ -20,9 +19,6 @@ import org.springframework.data.elasticsearch.core.query.Query;
  */
 @SpringBootTest
 public class EsAdvanceSearchTest {
-
-    @Autowired
-    private ProductDao productDao;
 
     @Autowired
     private ElasticsearchRestTemplate elasticsearchRestTemplate;
